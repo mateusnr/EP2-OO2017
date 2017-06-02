@@ -1,19 +1,26 @@
 package oo.ep2;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 public class Spaceship extends Sprite
 {
     private static final int X_MAX_SPEED = 2;
-    private static final int Y_MAX_SPEED = 1;
+    private static final int Y_MAX_SPEED = 2;
 
     private int speed_x;
     private int speed_y;
+
+    private ArrayList<Missile> missiles = new ArrayList<Missile>();
 
     public Spaceship(int x, int y) {
         super(x, y);
 
         initSpaceShip();
+    }
+
+    public ArrayList<Missile> getMissiles() {
+        return missiles;
     }
 
     private void initSpaceShip() {
@@ -43,29 +50,47 @@ public class Spaceship extends Sprite
         y += speed_y;
     }
 
+    public void moveMissile()
+    {
+        for(int i = 0; i < missiles.size(); ++i)
+        {
+            missiles.get(i).showMissile();
+            if(missiles.get(i).getY() > Game.getHeight()) //Remove o míssil da array quando ele chegar numa posição maior que o quadro do jogo
+            {
+                missiles.remove(i);
+            }
+        }
+    }
+
+
     public void keyPressed(KeyEvent event)
     {
         int key = event.getKeyCode();
 
-        if (key == KeyEvent.VK_LEFT)
+        if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A)
         {
             speed_x = -1 * X_MAX_SPEED;
         }
 
-        if (key == KeyEvent.VK_RIGHT)
+        else if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D)
         {
             speed_x = X_MAX_SPEED;
         }
 
-        if (key == KeyEvent.VK_UP)
+        else if (key == KeyEvent.VK_UP || key == KeyEvent.VK_W)
         {
             speed_y = -1 * Y_MAX_SPEED;
             thrust();
         }
 
-        if (key == KeyEvent.VK_DOWN)
+        else if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_S)
         {
             speed_y = Y_MAX_SPEED;
+        }
+
+        if (key == KeyEvent.VK_SPACE || key == KeyEvent.VK_ENTER)
+        {
+            missiles.add(new Missile(this.x, this.y));
         }
 
     }
@@ -74,13 +99,15 @@ public class Spaceship extends Sprite
 
         int key = e.getKeyCode();
 
-        if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_RIGHT) {
+        if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_A || key == KeyEvent.VK_D) {
             speed_x = 0;
         }
 
-        if (key == KeyEvent.VK_UP || key == KeyEvent.VK_DOWN) {
+        if (key == KeyEvent.VK_UP || key == KeyEvent.VK_DOWN  || key == KeyEvent.VK_W || key == KeyEvent.VK_S) {
             speed_y = 0;
             noThrust();
         }
+
+        if(key == KeyEvent.VK_SPACE || key == KeyEvent.VK_ENTER){}
     }
 }

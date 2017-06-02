@@ -17,8 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 
-
-
 public class Map extends JPanel implements ActionListener
 {
     private final int SPACESHIP_X = 220;
@@ -62,20 +60,27 @@ public class Map extends JPanel implements ActionListener
     private void draw(Graphics g)
     {
 
-        // Draw spaceship
+        // Mostrar nave espacial na tela
         g.drawImage(spaceship.getImage(), spaceship.getX(), spaceship.getY(), this);
+
+        /*
+            spaceship.getMissles() é uma ArrayList, cada elemnto na array list é um míssel numa determinada posição
+            percorremos a array e desenhamos na tela cada elemento
+         */
+        for (Missile missile : spaceship.getMissiles())
+        {
+            g.drawImage(missile.getImage(), missile.getX(), missile.getY(), this);
+        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e)
     {
-
         updateSpaceship();
-
         repaint();
     }
 
-    private void dranMissionAccomplished(Graphics g)
+    private void drawMissionAccomplished(Graphics g)
     {
 
         String message = "MISSION ACCOMPLISHED";
@@ -102,12 +107,11 @@ public class Map extends JPanel implements ActionListener
     private void updateSpaceship()
     {
         spaceship.move();
+        spaceship.moveMissile();
     }
-
 
     private class KeyListerner extends KeyAdapter
     {
-
         @Override
         public void keyPressed(KeyEvent e)
         {
@@ -119,9 +123,5 @@ public class Map extends JPanel implements ActionListener
         {
             spaceship.keyReleased(e);
         }
-
-
     }
-
-
 }
