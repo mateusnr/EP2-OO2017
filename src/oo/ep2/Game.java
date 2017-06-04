@@ -4,7 +4,7 @@ public class Game
 {
     private static final int width = 500;
     private static final int height = 500;
-    private static final int delay = 7;
+    private static final int delay = 12;
 
     public static int getWidth() {
         return width;

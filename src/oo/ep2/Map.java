@@ -11,6 +11,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -25,11 +27,13 @@ public class Map extends JPanel implements ActionListener
 
     private final Image background;
     private final Spaceship spaceship;
+    private final ArrayList<Alien> aliens;
+
+    private int delay = 0;
 
 
     public Map()
     {
-
         addKeyListener(new KeyListerner());
 
         setFocusable(true);
@@ -39,6 +43,7 @@ public class Map extends JPanel implements ActionListener
         this.background = image.getImage();
 
         spaceship = new Spaceship(SPACESHIP_X, SPACESHIP_Y);
+        aliens = new ArrayList<>();
 
         timer_map = new Timer(Game.getDelay(), this);
         timer_map.start();
@@ -52,24 +57,41 @@ public class Map extends JPanel implements ActionListener
 
         g.drawImage(this.background, 0, 0, null);
 
-        draw(g);
+        drawSpaceship(g);
+        drawAliens(g);
+        drawMissiles(g);
 
         Toolkit.getDefaultToolkit().sync();
     }
 
-    private void draw(Graphics g)
+    public void drawAliens(Graphics g)
     {
+        for (Alien alien : aliens)
+        {
+            g.drawImage(alien.getImage(), alien.getX(), alien.getY(), this);
+        }
+    }
 
-        // Mostrar nave espacial na tela
-        g.drawImage(spaceship.getImage(), spaceship.getX(), spaceship.getY(), this);
-
-        /*
-            spaceship.getMissles() é uma ArrayList, cada elemnto na array list é um míssel numa determinada posição
-            percorremos a array e desenhamos na tela cada elemento
-         */
+    public void drawMissiles(Graphics g)
+    {
         for (Missile missile : spaceship.getMissiles())
         {
             g.drawImage(missile.getImage(), missile.getX(), missile.getY(), this);
+        }
+    }
+
+    private void drawSpaceship(Graphics g)
+    {
+        g.drawImage(spaceship.getImage(), spaceship.getX(), spaceship.getY(), this);
+    }
+
+    public synchronized void generateAliens()
+    {
+        Random randomX = new Random();
+
+        for (int i = 0; i < 5; i++) {
+            int randX = randomX.nextInt(Game.getWidth());
+            aliens.add(new Alien(randX, 0));
         }
     }
 
@@ -77,6 +99,17 @@ public class Map extends JPanel implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
         updateSpaceship();
+
+        updateAlien();
+
+        if (delay == Game.getDelay())
+        {
+            generateAliens();
+            delay = 0;
+        }
+        else
+            ++delay;
+
         repaint();
     }
 
@@ -104,10 +137,21 @@ public class Map extends JPanel implements ActionListener
         g.drawString(message, (Game.getWidth() - metric.stringWidth(message)) / 2, Game.getHeight() / 2);
     }
 
-    private void updateSpaceship()
+    private synchronized void updateSpaceship()
     {
         spaceship.move();
         spaceship.moveMissile();
+    }
+
+    private synchronized void updateAlien()
+    {
+        for (int i = 0; i < aliens.size(); i++)
+        {
+            if (aliens.get(i).getY() > Game.getHeight() || !aliens.get(i).isVisible())
+                aliens.remove(i);
+            else
+                aliens.get(i).showAlien();
+        }
     }
 
     private class KeyListerner extends KeyAdapter
