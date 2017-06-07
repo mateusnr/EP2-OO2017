@@ -1,16 +1,11 @@
 package oo.ep2;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -57,9 +52,11 @@ public class Map extends JPanel implements ActionListener
 
         g.drawImage(this.background, 0, 0, null);
 
+        drawScore(g);
         drawSpaceship(g);
         drawAliens(g);
         drawMissiles(g);
+
 
         Toolkit.getDefaultToolkit().sync();
     }
@@ -88,10 +85,16 @@ public class Map extends JPanel implements ActionListener
     public synchronized void generateAliens()
     {
         Random randomX = new Random();
-
-        for (int i = 0; i < 5; i++) {
+        int prev = 0;
+        for (int i = 0; i < 2; i++) {
             int randX = randomX.nextInt(Game.getWidth());
+
+            if (randX == prev)
+                randX = randomX.nextInt(Game.getWidth()) + 20;
+
             aliens.add(new Alien(randX, 0));
+
+            prev = randX;
         }
     }
 
@@ -99,8 +102,12 @@ public class Map extends JPanel implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
         updateSpaceship();
-
         updateAlien();
+
+        spaceshipAndAlienCollision();
+        alienAndMissileCollision();
+
+
 
         if (delay == Game.getDelay())
         {
@@ -125,6 +132,18 @@ public class Map extends JPanel implements ActionListener
         g.drawString(message, (Game.getWidth() - metric.stringWidth(message)) / 2, Game.getHeight() / 2);
     }
 
+    private void drawScore(Graphics g)
+    {
+
+        String message = "Score: " + spaceship.getScore();
+        Font font = new Font("", Font.BOLD, 14);
+        FontMetrics metric = getFontMetrics(font);
+
+        g.setColor(Color.white);
+        g.setFont(font);
+        g.drawString(message, 10, 10);
+    }
+
     private void drawGameOver(Graphics g)
     {
 
@@ -135,6 +154,41 @@ public class Map extends JPanel implements ActionListener
         g.setColor(Color.white);
         g.setFont(font);
         g.drawString(message, (Game.getWidth() - metric.stringWidth(message)) / 2, Game.getHeight() / 2);
+    }
+
+    public synchronized void spaceshipAndAlienCollision()
+    {
+        Rectangle spaceship_d = spaceship.getBounds();
+
+        for (int i = 0; i < aliens.size(); i++)
+        {
+            Rectangle alien = aliens.get(i).getBounds();
+            if (spaceship_d.intersects(alien))
+                aliens.get(i).setVisible(false);
+        }
+    }
+
+    public synchronized void alienAndMissileCollision()
+    {
+        ArrayList<Missile> missiles = spaceship.getMissiles();
+
+        for (int i = 0; i < aliens.size(); i++)
+        {
+            Rectangle alienBounds = aliens.get(i).getBounds();
+            for (int j = 0; j < missiles.size(); j++)
+            {
+                Rectangle missleBounds = missiles.get(j).getBounds();
+                if (alienBounds.intersects(missleBounds))
+                {
+                    spaceship.setScore(10);
+                    missiles.get(j).setVisible(false);
+                    aliens.get(i).setVisible(false);
+                }
+            }
+        }
+
+        spaceship.removeUsedMissiles();
+
     }
 
     private synchronized void updateSpaceship()

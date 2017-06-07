@@ -11,17 +11,25 @@ public class Spaceship extends Sprite
     private int speed_x;
     private int speed_y;
 
+    private int score;
+
     private ArrayList<Missile> missiles = new ArrayList<Missile>();
 
     public Spaceship(int x, int y) {
         super(x, y);
-
+        score = 0;
         initSpaceShip();
     }
 
     public ArrayList<Missile> getMissiles() {
         return missiles;
     }
+
+    public void setScore(int score) {
+        this.score += score;
+    }
+
+    public int getScore(){ return score; }
 
     private void initSpaceShip() {
         noThrust();
@@ -109,5 +117,14 @@ public class Spaceship extends Sprite
         }
 
         if(key == KeyEvent.VK_SPACE || key == KeyEvent.VK_ENTER){}
+    }
+
+    public synchronized void removeUsedMissiles() {
+        for (int i = 0; i < missiles.size(); i++) {
+            if (!missiles.get(i).isVisible())
+                missiles.remove(i);
+        }
+
+
     }
 }
