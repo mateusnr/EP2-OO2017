@@ -12,12 +12,25 @@ public class Spaceship extends Sprite
     private int speed_y;
 
     private int score;
+    private int lives;
+
 
     private ArrayList<Missile> missiles = new ArrayList<Missile>();
 
+    public int getLives() {
+        return lives;
+    }
+
+    public void setLives(int lives)
+    {
+        this.lives -= lives;
+    }
+
     public Spaceship(int x, int y) {
         super(x, y);
+        lives = 2;
         score = 0;
+
         initSpaceShip();
     }
 
