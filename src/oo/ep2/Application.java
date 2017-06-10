@@ -18,7 +18,7 @@ public class Application extends JFrame
         setLocationRelativeTo(null);
     }
 
-    public static void main(String[] args)
+    /*public static void main(String[] args)
     {
         EventQueue.invokeLater(new Runnable()
         {
@@ -28,5 +28,5 @@ public class Application extends JFrame
                 game.setVisible(true);
             }
         });
-    }
+    }*/
 }

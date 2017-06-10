@@ -38,6 +38,7 @@ public class Map extends JPanel implements ActionListener
     private String difficultyImage;
     private int delay = 0;
     private boolean isAlive;
+    private boolean isRunning;
 
 
     public Map()
@@ -51,6 +52,7 @@ public class Map extends JPanel implements ActionListener
         this.background = image.getImage();
 
         isAlive = true;
+        isRunning = true;
         difficulty = EASY;
         difficultyImage = ALIEN_EASY;
         spaceship = new Spaceship(SPACESHIP_X, SPACESHIP_Y);
@@ -78,6 +80,12 @@ public class Map extends JPanel implements ActionListener
             drawGameOver(g);
 
 
+        if (!isRunning)
+        {
+            timer_map.stop();
+            drawPause(g);
+        }
+
         Toolkit.getDefaultToolkit().sync();
     }
 
@@ -91,7 +99,10 @@ public class Map extends JPanel implements ActionListener
 
     public void checkIfAlive(){
         if(!isAlive)
+        {
             timer_map.stop();
+        }
+
     }
 
     private void drawMissiles(Graphics g)
@@ -160,18 +171,6 @@ public class Map extends JPanel implements ActionListener
         repaint();
     }
 
-    private void drawMissionAccomplished(Graphics g)
-    {
-
-        String message = "MISSION ACCOMPLISHED";
-        Font font = new Font("Helvetica", Font.BOLD, 14);
-        FontMetrics metric = getFontMetrics(font);
-
-        g.setColor(Color.white);
-        g.setFont(font);
-        g.drawString(message, (Game.getWidth() - metric.stringWidth(message)) / 2, Game.getHeight() / 2);
-    }
-
     private void drawScore(Graphics g)
     {
 
@@ -180,11 +179,24 @@ public class Map extends JPanel implements ActionListener
         String message2 = "Lives: " + spaceship.getLives();
         Font font = new Font("Cantarell", Font.BOLD, 14);
 
-        FontMetrics metric = getFontMetrics(font);
         g.setColor(Color.white);
         g.setFont(font);
-        g.drawString(message, 10, 10);
-        g.drawString(message2, 10, 20);
+        g.drawString(message, 10, 15);
+        g.drawString(message2, 10, 30);
+    }
+
+    private void drawPause(Graphics g)
+    {
+
+        String message = "PAUSED";
+
+        Font font = new Font("Cantarell", Font.BOLD, 14);
+
+        FontMetrics metric = getFontMetrics(font);
+
+        g.setColor(Color.white);
+        g.setFont(font);
+        g.drawString(message, (Game.getWidth() - metric.stringWidth(message)) / 2, Game.getHeight() / 2);
     }
 
     private void drawGameOver(Graphics g)
@@ -264,6 +276,17 @@ public class Map extends JPanel implements ActionListener
         public void keyPressed(KeyEvent e)
         {
             spaceship.keyPressed(e);
+            int pressedKey = e.getKeyCode();
+
+            if (pressedKey == KeyEvent.VK_ESCAPE)
+            {
+                if (timer_map.isRunning())
+                    isRunning = false;
+                else {
+                    isRunning = true;
+                    timer_map.start();
+                }
+            }
         }
 
         @Override

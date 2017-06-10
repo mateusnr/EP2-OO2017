@@ -15,21 +15,22 @@ public class Menu {
     private JPanel controlPanel;
 
     public Menu() {
-        preparaGUI();
-        criaPanel();
+        gui();
+        panel();
     }
 
-    private void preparaGUI() {
+    private void gui() {
         mainFrame = new JFrame("EP2 - Space War");
         mainFrame.setSize(400, 350);
         mainFrame.setLocation(500, 200);
         mainFrame.setLayout(new GridLayout(3, 1));
 
-        mainFrame.addWindowListener(new WindowAdapter() {
+        /*mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
                 System.exit(0);
             }
-        });
+        });*/
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         headerLabel = new JLabel("Header Label", JLabel.CENTER);
         statusLabel = new JLabel("2017", JLabel.CENTER);
@@ -46,7 +47,7 @@ public class Menu {
 
     }
 
-    private void criaPanel() {
+    private void panel() {
         headerLabel.setText("Use as setas do teclado para mover e espaço para atirar");
         JButton jogarButton = new JButton("Jogar");
         JButton sairButton = new JButton("Sair");
@@ -59,6 +60,8 @@ public class Menu {
 
         controlPanel.add(jogarButton);
         controlPanel.add(sairButton);
+
+        mainFrame.setVisible(true);
     }
 
 
@@ -68,7 +71,9 @@ public class Menu {
         public void actionPerformed(ActionEvent arg0) {
             String comando = arg0.getActionCommand();
             if (comando.equals("Jogar")) {
-
+                Application game = new Application();
+                game.setVisible(true);
+                mainFrame.setVisible(false);
 
             } else {
                 System.exit(0);
@@ -80,6 +85,13 @@ public class Menu {
     }
 
     public static void main(String[] args) {
-        Menu exemplo = new Menu();
+         EventQueue.invokeLater(new Runnable()
+        {
+            @Override
+            public void run() {
+                Menu exemplo = new Menu();
+            }
+        });
+
     }
 }
